@@ -2,6 +2,7 @@ package com.example.account.domain.account;
 
 import com.example.account.domain.base.BaseEntity;
 import com.example.account.domain.member.Member;
+import com.example.account.exception.AccountException;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +20,8 @@ public class Account extends BaseEntity {
 
     private String accountNumber;
 
+    private String password;
+
     private Long balance;
 
     @Column(name = "member_id")
@@ -33,6 +36,18 @@ public class Account extends BaseEntity {
 
     public void unregister() {
         this.accountStatus = AccountStatus.UNREGISTERED;
+    }
+
+    public void deposit(Long amount) {
+        this.balance += amount;
+    }
+
+    public void withdraw(Long amount) {
+        Long mathBalance = this.balance - amount;
+        if( mathBalance < 0  ) {
+            throw new AccountException("잔액이 부족합니다.");
+        }
+        this.balance = mathBalance;
     }
 
 }
