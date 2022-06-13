@@ -35,3 +35,154 @@
 </div>
 
 
+## 사용 방법
+
+1. postman으로 API 테스트를 많이 하지만 저는 인텔리제이에서 지원하는 기능을 사용하였습니다.  
+
+```/main/resource/request.http```
+
+![http](./image/http.png)
+
+2. libary인 swagger을 사용하여 테스트도 가능합니다.
+
+![swagger](./image/swagger.png)
+
+
+## API 목록
+
+### 회원 가입
+
+- 요청
+
+![request](./image/회원생성%20요청.png)
+
+
+- 응답
+
+![response](./image/회원생성%20응답.png)
+
+
+---
+
+### 계좌 정지(해지)
+
+- 요청
+
+![request](./image/해지%20요청.png)
+
+- 응답
+
+![response](./image/해지%20응답.png)
+
+---
+
+### 계좌 조회 API
+
+- 요청
+
+![request](./image/계좌조회%20요청.png)
+
+- 응답
+
+![response](./image/계좌조회%20응답.png)
+
+---
+
+### 계좌 생성
+
+- 요청
+
+![request](./image/계좌%20생성%20요청.png)
+
+- 응답
+
+![response](./image/계좌%20생성%20응답.png)
+
+---
+
+### 입금 API
+
+- 요청
+
+![request](./image/입금%20요청.png)
+
+- 응답 
+
+![response](./image/입금%20응답.png)
+
+---
+
+### 출금 API
+
+- 요청
+
+![request](./image/출금%20요청.png)
+
+- 응답
+
+![response](./image/출금%20응답.png)
+
+---
+
+### 결제 API
+
+- 요청
+
+![request](./image/결제%20요청.png)
+
+- 응답
+
+![response](./image/결제%20응답.png)
+
+---
+
+### 결제 취소 API
+
+- 요청
+
+![request](./image/결제취소%20요청.png)
+
+- 응답
+
+![response](./image/결제취소%20응답.png)
+
+---
+
+### 거래내역 조회 API
+
+- 요청
+
+![reuqest](./image/거래내역%20요청.png)
+
+- 응답
+
+![response](./image/거래%20내역%20응답.png)
+
+
+### 아쉬운점
+
+## Jacoco 
+
+1. 왼쪽 탭의 gradle에서 verification -> test를 실행한다.
+
+![jacoco-1](./image/jacoco-1.png)
+
+
+2. 테스트 코드가 실행이 된다.
+
+![jacoco-2](./image/jacoco-2.png)
+
+
+3. build 폴더에 tests -> test -> index.html를 열어본다.
+
+![jacoco-3](./image/jacoco-3.png)
+
+
+4. 테스트 성공/ 실패율을 알수 있다.
+
+![jacoco-4](./image/jacoco-4.png)
+
+
+5 [여기서 아쉬운 부분] 모든 곳을 채워 테스트 케이스 100%을 만들고 싶다.
+
+![jacoco-5](./image/jacoco-5.png)
