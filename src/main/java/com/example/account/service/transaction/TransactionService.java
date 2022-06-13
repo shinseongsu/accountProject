@@ -95,6 +95,9 @@ public class TransactionService {
         if(transaction.getAccountStatus().equals(TransactionStatus.CANCEL)) {
             throw new AccountException("이미 취소 상태입니다.");
         }
+        if(!transaction.getAccountStatus().equals(TransactionStatus.PAY)) {
+            throw new AccountException("결제만 취소 가능합니다.");
+        }
         if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
             throw new AccountException("패스워드가 맞지 않습니다.");
         }
