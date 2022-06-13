@@ -1,4 +1,4 @@
-@package com.example.account.domain.base;
+package com.example.account.domain.base;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
