@@ -19,10 +19,18 @@ public class WithdrawDto {
         private String accountNumber;
         @NotEmpty
         @Schema(description = "출금 금액")
-        private Long amount;
+        private String amount;
         @NotEmpty
         @Schema(description = "결제 비밀번호")
         private String password;
+
+        @Builder
+        public Request(String accountNumber, String amount, String password) {
+            this.accountNumber = accountNumber;
+            this.amount = amount;
+            this.password = password;
+        }
+
     }
 
     @Schema(description = "출금 응답 DTO")

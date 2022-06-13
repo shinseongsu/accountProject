@@ -22,10 +22,19 @@ public class PayDto {
         private String orderName;
         @NotEmpty
         @Schema(description = "결제 금액")
-        private Long amount;
+        private String amount;
         @NotEmpty
         @Schema(description = "계좌 비밀번호")
         private String password;
+
+        @Builder
+        public Request(String accountNumber, String orderName, String amount, String password) {
+            this.accountNumber = accountNumber;
+            this.orderName = orderName;
+            this.amount = amount;
+            this.password = password;
+        }
+
     }
 
     @Schema(description = "계좌 번호")

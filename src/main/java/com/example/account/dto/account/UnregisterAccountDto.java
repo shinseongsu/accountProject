@@ -1,25 +1,31 @@
 package com.example.account.dto.account;
 
 import com.example.account.constatnt.Code;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
+import javax.validation.constraints.NotEmpty;
 
 public class UnregisterAccountDto {
 
-    @Getter
-    @Setter
+    @Schema(description = "계좌 해지 요청 DTO")
+    @Getter @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Request {
+        @Schema(description = "계좌 번호")
+        @NotEmpty
         private String accountNumber;
     }
 
-    @Getter
-    @Setter
+    @Schema(description = "계좌 해지 응답 DTO")
+    @Getter @Setter
     @Builder
     public static class Response {
+        @Schema(description = "결과 코드")
         private String code;
+        @Schema(description = "결과 메시지")
         private String meessage;
 
         public static Response success() {

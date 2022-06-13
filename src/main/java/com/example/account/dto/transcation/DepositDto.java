@@ -19,7 +19,14 @@ public class DepositDto {
         private String accountNumber;
         @NotEmpty
         @Schema(description = "입금 금액")
-        private Long amount;
+        private String amount;
+
+        @Builder
+        public Request(String accountNumber, String amount) {
+            this.accountNumber = accountNumber;
+            this.amount = amount;
+        }
+
     }
 
     @Schema(description = "입금 응답 DTO")

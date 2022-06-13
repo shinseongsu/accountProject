@@ -28,11 +28,11 @@ public class TransactionService {
     public Account deposit(DepositDto.Request request) {
         Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        account.deposit(request.getAmount());
+        account.deposit(  Long.valueOf(request.getAmount()));
 
         Transaction transaction = Transaction.builder()
                 .orderName(TransactionStatus.DEPOSIT.getValue())
-                .balance(request.getAmount())
+                .balance( Long.valueOf(request.getAmount()))
                 .accountStatus(TransactionStatus.DEPOSIT)
                 .accountNumber(request.getAccountNumber())
                 .accountId(account.getId())
@@ -47,11 +47,11 @@ public class TransactionService {
         if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
             throw new AccountException("패스워드가 맞지 않습니다.");
         }
-        account.withdraw(request.getAmount());
+        account.withdraw(Long.valueOf(request.getAmount()));
 
         Transaction transaction = Transaction.builder()
                 .orderName(TransactionStatus.WITHDRAW.getValue())
-                .balance(request.getAmount())
+                .balance(Long.valueOf(request.getAmount()))
                 .accountStatus(TransactionStatus.WITHDRAW)
                 .accountNumber(request.getAccountNumber())
                 .accountId(account.getId())
@@ -66,11 +66,11 @@ public class TransactionService {
         if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
             throw new AccountException("패스워드가 맞지 않습니다.");
         }
-        account.withdraw(request.getAmount());
+        account.withdraw(Long.valueOf(request.getAmount()));
 
         Transaction transaction = Transaction.builder()
                 .orderName(request.getOrderName())
-                .balance(request.getAmount())
+                .balance(Long.valueOf(request.getAmount()))
                 .accountStatus(TransactionStatus.PAY)
                 .accountNumber(request.getAccountNumber())
                 .accountId(account.getId())
@@ -82,7 +82,7 @@ public class TransactionService {
                 .message(Code.PAY_SUCCESS.getMessage())
                 .orderId(transaction.getId())
                 .orderName(request.getOrderName())
-                .balance(request.getAmount())
+                .balance(Long.valueOf(request.getAmount()))
                 .accountBalance(account.getBalance())
                 .build();
     }
@@ -90,7 +90,7 @@ public class TransactionService {
     public CancelDto.Response cancel(CancelDto.Request request) {
         Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        Transaction transaction = transactionRepository.findById(request.getOrderId())
+        Transaction transaction = transactionRepository.findById(Long.valueOf(request.getOrderId()))
                 .orElseThrow(() -> new AccountException("거래 정보가 존재하지 않습니다."));
         if(transaction.getAccountStatus().equals(TransactionStatus.CANCEL)) {
             throw new AccountException("이미 취소 상태입니다.");
@@ -98,7 +98,6 @@ public class TransactionService {
         if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
             throw new AccountException("패스워드가 맞지 않습니다.");
         }
-
         transaction.cancel();
 
         return CancelDto.Response.builder()

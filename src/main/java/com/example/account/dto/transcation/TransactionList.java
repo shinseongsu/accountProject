@@ -24,6 +24,7 @@ public class TransactionList {
     @Schema(description = "거래 일자")
     private LocalDateTime transactionDate;
 
+    @Builder
     public TransactionList(Long orderId, String orderName, Long balance, TransactionStatus status, LocalDateTime transactionDate) {
         this.orderId = orderId;
         this.orderName = orderName;

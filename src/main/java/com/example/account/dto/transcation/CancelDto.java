@@ -16,13 +16,21 @@ public class CancelDto {
     public static class Request {
         @NotEmpty
         @Schema(description = "주문 아이디")
-        private Long orderId;
+        private String orderId;
         @NotEmpty
         @Schema(description = "계좌 번호")
         private String accountNumber;
         @NotEmpty
         @Schema(description = "계좌 비밀번호")
         private String password;
+
+        @Builder
+        public Request(String orderId, String accountNumber, String password) {
+            this.orderId = orderId;
+            this.accountNumber = accountNumber;
+            this.password = password;
+        }
+
     }
 
     @Schema(description = "취소 응답 DTO")

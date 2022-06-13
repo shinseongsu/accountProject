@@ -17,7 +17,7 @@ Content-Type: application/json
   "accountNumber": "0020220613122617"
 }
 
-### 계좌 조회
+### 계좌 생성
 POST http://localhost:8080/account
 Content-Type: application/json
 
