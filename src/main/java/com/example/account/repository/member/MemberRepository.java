@@ -14,6 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "from Member m " +
             "join fetch Account a " +
             "on m.id = a.memberId " +
+            "and a.accountStatus = 'IN_USE' " +
             "where m.name = :name " +
             "and m.birthDay = :birthDay " +
             "and m.phoneNumber = :phoneNumber ")

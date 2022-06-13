@@ -17,11 +17,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public void createMember(Member member) {
-        memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
+        Optional<Member> isMember = memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
                                                             member.getBirthDay(),
-                                                            member.getPhoneNumber())
-                        .orElseThrow(() -> new AccountException("회원이 이미 존재합니다."));
+                                                            member.getPhoneNumber());
 
+        if(isMember.isPresent()) {
+            throw new AccountException("회원이 이미 존재합니다.");
+        }
         memberRepository.save(member);
     }
 
