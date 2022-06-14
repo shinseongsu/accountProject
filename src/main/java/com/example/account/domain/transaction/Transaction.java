@@ -25,7 +25,7 @@ public class Transaction extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TransactionStatus accountStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountId", updatable = false, insertable = false)
     private Account account;
 

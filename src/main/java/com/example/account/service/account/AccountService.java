@@ -12,9 +12,10 @@ import com.example.account.repository.account.AccountRepository;
 import com.example.account.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,6 +83,7 @@ public class AccountService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public String findMaxId() {
         Integer maxSeq = accountRepository.findMaxId()
                 .orElse(0);

@@ -9,12 +9,11 @@ import com.example.account.exception.AccountException;
 import com.example.account.repository.account.AccountRepository;
 import com.example.account.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -109,8 +108,9 @@ public class TransactionService {
     public CancelDto.Response cancel(CancelDto cancelDto) {
         Account account = accountRepository.findByAccountNumber(cancelDto.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        Transaction transaction = transactionRepository.findById(Long.valueOf(cancelDto.getTransactionId()))
+        Transaction transaction = transactionRepository.findById(cancelDto.getTransactionId())
                 .orElseThrow(() -> new AccountException("거래 정보가 존재하지 않습니다."));
+
         if(!transaction.getBalance().equals(cancelDto.getAmount())) throw new AccountException("결제 금액이 달라 취소할 수 없습니다.");
         if(transaction.getAccountStatus().equals(TransactionStatus.CANCEL)) throw new AccountException("이미 취소 상태입니다.");
         if(!transaction.getAccountStatus().equals(TransactionStatus.PAY)) throw new AccountException("결제만 취소 가능합니다.");
@@ -129,6 +129,7 @@ public class TransactionService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public TransactionDto transaction(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new AccountException("거래 정보가 존재하지 않습니다."));

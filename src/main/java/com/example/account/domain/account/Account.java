@@ -25,7 +25,7 @@ public class Account extends BaseEntity {
     @Column(name = "member_id")
     private Long memberId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", updatable = false, insertable = false)
     private Member member;
 
