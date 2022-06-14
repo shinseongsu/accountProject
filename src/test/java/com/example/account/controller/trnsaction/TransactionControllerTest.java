@@ -73,7 +73,9 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.code").value(Code.DEPOSIT_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.DEPOSIT_SUCCESS.getMessage()))
                 .andExpect(jsonPath("$.accountNumber").value(accountNumber))
-                .andExpect(jsonPath("$.currentBalance").value(amount))
+                .andExpect(jsonPath("$.transactionResult").value(0L))
+                .andExpect(jsonPath("$.transactionId").value(1L))
+                .andExpect(jsonPath("$.amount").value(amount))
                 .andExpect(status().isOk());
     }
 
@@ -107,7 +109,9 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.code").value(Code.WITHDRAW_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.WITHDRAW_SUCCESS.getMessage()))
                 .andExpect(jsonPath("$.accountNumber").value(accountNumber))
-                .andExpect(jsonPath("$.currentBalance").value(amount))
+                .andExpect(jsonPath("$.transactionResult").value(0L))
+                .andExpect(jsonPath("$.transactionId").value(1L))
+                .andExpect(jsonPath("$.amount").value(amount))
                 .andExpect(status().isOk());
     }
 
@@ -127,6 +131,11 @@ public class TransactionControllerTest {
         when(transactionService.pay(any())).thenReturn(PayDto.Response.builder()
                 .code(Code.PAY_SUCCESS.getCode())
                 .message(Code.PAY_SUCCESS.getMessage())
+                        .accountNumber(accountNumber)
+                        .transactionResult(amount)
+                        .transactionId(1L)
+                        .amount(amount)
+                        .transactionDate(LocalDateTime.now())
                 .build());
 
         mockMvc.perform(post("/pay")
@@ -135,8 +144,10 @@ public class TransactionControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.PAY_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.PAY_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.balance").value(amount))
-                .andExpect(jsonPath("$.accountBalance").value(Long.valueOf(amount)))
+                .andExpect(jsonPath("$.transactionId").value(1L))
+                .andExpect(jsonPath("$.accountNumber").value(Long.valueOf(accountNumber)))
+                .andExpect(jsonPath("$.transactionResult").value(amount))
+                .andExpect(jsonPath("$.amount").value(amount))
                 .andExpect(status().isOk());
     }
 
@@ -144,23 +155,22 @@ public class TransactionControllerTest {
     @DisplayName("결제 취소 Test")
     void 결제취소_test() throws Exception {
         String accountNumber = "1248124912";
-        String amount = "1000";
-        String password = "1111";
-        String orderId = "1";
-        String orderName = "테스트 상품";
+        Long amount = 1000L;
 
         CancelDto request = CancelDto.builder()
-          //      .orderId(orderId)
+                .transactionId(1L)
                 .accountNumber(accountNumber)
-         //       .password(password)
+                .amount(amount)
                 .build();
 
         when(transactionService.cancel(any())).thenReturn(CancelDto.Response.builder()
                 .code(Code.CANCEL_SUCCESS.getCode())
                 .message(Code.CANCEL_SUCCESS.getMessage())
-          //      .orderName(orderName)
-          //      .balance(Long.valueOf(amount))
-          //      .accountBalance(Long.valueOf(amount))
+                .accountNumber(accountNumber)
+                .transactionResult(amount)
+                .transactionId(1L)
+                .amount(amount)
+                .transactionDate(LocalDateTime.now())
                 .build());
 
         mockMvc.perform(post("/cancel")
@@ -169,41 +179,42 @@ public class TransactionControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.CANCEL_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.CANCEL_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.orderId").value(orderId))
-                .andExpect(jsonPath("$.orderName").value(orderName))
-                .andExpect(jsonPath("$.balance").value(amount))
-                .andExpect(jsonPath("$.accountBalance").value(Long.valueOf(amount)))
+                .andExpect(jsonPath("$.accountNumber").value(accountNumber))
+                .andExpect(jsonPath("$.transactionResult").value(amount))
+                .andExpect(jsonPath("$.transactionId").value(1L))
+                .andExpect(jsonPath("$.amount").value(amount))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("거래조회 Test")
     void 결제_조회_test() throws Exception {
-        String accountNumber = "124124213";
-        Long orderId = 1L;
-        String orderName = "테스트 상품";
-        Integer totalPage = 10;
+        String accountNumber = "1234567890";
         Long balance = 1000L;
+        Long transcationId = 1L;
         TransactionStatus transactionStatus = TransactionStatus.PAY;
-        LocalDateTime current = LocalDateTime.now();
 
         when(transactionService.transaction(anyLong())).thenReturn(TransactionDto.builder()
                         .code(Code.SUCESS.getCode())
                         .message(Code.SUCESS.getMessage())
                         .accountNumber(accountNumber)
+                        .transactionStatus(transactionStatus)
+                        .transactionResult(balance)
+                        .transactionId(1L)
+                        .amount(balance)
+                        .transactionDate(LocalDateTime.now())
                         .build());
 
 
-        mockMvc.perform(get("/transaction?accountNumber=" + accountNumber))
+        mockMvc.perform(get("/transaction?transaction_id=1"))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.SUCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.SUCESS.getMessage()))
                 .andExpect(jsonPath("$.accountNumber").value(accountNumber))
-                .andExpect(jsonPath("$.totalPage").value(totalPage))
-                .andExpect(jsonPath("$.transactionList[0].orderId").value(orderId))
-                .andExpect(jsonPath("$.transactionList[0].orderName").value(orderName))
-                .andExpect(jsonPath("$.transactionList[0].balance").value(balance))
-                .andExpect(jsonPath("$.transactionList[0].status").value(transactionStatus.toString()))
+                .andExpect(jsonPath("$.transactionStatus").value(transactionStatus.toString()))
+                .andExpect(jsonPath("$.transactionResult").value(balance))
+                .andExpect(jsonPath("$.transactionId").value(transcationId))
+                .andExpect(jsonPath("$.amount").value(balance))
                 .andExpect(status().isOk());
 
     }

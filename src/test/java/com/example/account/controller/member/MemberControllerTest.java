@@ -62,7 +62,7 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.SUCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.SUCESS.getMessage()))
-                .andExpect(jsonPath("$.accountNumber").isNotEmpty())
+                .andExpect(jsonPath("$.accountNumber").value("0000000001"))
                 .andExpect(status().isOk());
     }
 

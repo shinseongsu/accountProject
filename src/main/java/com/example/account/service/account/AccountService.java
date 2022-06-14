@@ -34,7 +34,6 @@ public class AccountService {
         if(account.getAccountStatus().equals(AccountStatus.UNREGISTERED)) {
             throw new AccountException("이미 해지 상태입니다.");
         }
-
         account.unregister();
 
         return UnregisterAccountDto.Response.builder()
