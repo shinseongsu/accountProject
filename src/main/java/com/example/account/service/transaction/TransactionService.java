@@ -25,106 +25,123 @@ public class TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    public Account deposit(DepositDto.Request request) {
-        Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
+    public DepositDto.Response deposit(DepositDto depositDto) {
+        Account account = accountRepository.findByAccountNumber(depositDto.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        account.deposit(  Long.valueOf(request.getAmount()));
+        if(depositDto.getAmount() <= 0) throw new AccountException("거래 금액 값이 너무 작습니다.");
+        if(!depositDto.getMemberId().equals(account.getMemberId())) throw new AccountException("소유자가 다릅니다.");
+        account.deposit(depositDto.getAmount());
 
         Transaction transaction = Transaction.builder()
-                .orderName(TransactionStatus.DEPOSIT.getValue())
-                .balance( Long.valueOf(request.getAmount()))
+                .balance(depositDto.getAmount())
                 .accountStatus(TransactionStatus.DEPOSIT)
-                .accountNumber(request.getAccountNumber())
+                .accountNumber(depositDto.getAccountNumber())
                 .accountId(account.getId())
+                .transactionResult(account.getBalance())
                 .build();
         transactionRepository.save(transaction);
-        return account;
+
+        return DepositDto.Response.builder()
+                .code(Code.DEPOSIT_SUCCESS.getCode())
+                .message(Code.DEPOSIT_SUCCESS.getMessage())
+                .accountNumber(depositDto.getAccountNumber())
+                .transactionResult(transaction.getTransactionResult())
+                .transactionId(transaction.getId())
+                .amount(depositDto.getAmount())
+                .transactionDate(transaction.getCreateDate())
+                .build();
     }
 
-    public Account withdraw(WithdrawDto.Request request) {
-        Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
+    public WithdrawDto.Response withdraw(WithdrawDto withdrawDto) {
+        Account account = accountRepository.findByAccountNumber(withdrawDto.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
-            throw new AccountException("패스워드가 맞지 않습니다.");
-        }
-        account.withdraw(Long.valueOf(request.getAmount()));
+        if(withdrawDto.getAmount() <= 0) throw new AccountException("거래 금액 값이 너무 작습니다.");
+        if(!withdrawDto.getMemberId().equals(account.getMemberId())) throw new AccountException("소유자가 다릅니다.");
+        account.withdraw(Long.valueOf(withdrawDto.getAmount()));
 
         Transaction transaction = Transaction.builder()
-                .orderName(TransactionStatus.WITHDRAW.getValue())
-                .balance(Long.valueOf(request.getAmount()))
+                .balance(Long.valueOf(withdrawDto.getAmount()))
                 .accountStatus(TransactionStatus.WITHDRAW)
-                .accountNumber(request.getAccountNumber())
+                .accountNumber(withdrawDto.getAccountNumber())
                 .accountId(account.getId())
+                .transactionResult(account.getBalance())
                 .build();
         transactionRepository.save(transaction);
-        return account;
+
+        return WithdrawDto.Response.builder()
+                .code(Code.DEPOSIT_SUCCESS.getCode())
+                .message(Code.DEPOSIT_SUCCESS.getMessage())
+                .accountNumber(withdrawDto.getAccountNumber())
+                .transactionResult(transaction.getTransactionResult())
+                .transactionId(transaction.getId())
+                .amount(withdrawDto.getAmount())
+                .transactionDate(transaction.getCreateDate())
+                .build();
     }
 
-    public PayDto.Response pay(PayDto.Request request) {
-        Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
+    public PayDto.Response pay(PayDto payDto) {
+        Account account = accountRepository.findByAccountNumber(payDto.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
-            throw new AccountException("패스워드가 맞지 않습니다.");
-        }
-        account.withdraw(Long.valueOf(request.getAmount()));
+        if(payDto.getAmount() <= 0) throw new AccountException("거래 금액 값이 너무 작습니다.");
+        if(!payDto.getMemberId().equals(account.getMemberId())) throw new AccountException("소유자가 다릅니다.");
+        account.withdraw(Long.valueOf(payDto.getAmount()));
 
         Transaction transaction = Transaction.builder()
-                .orderName(request.getOrderName())
-                .balance(Long.valueOf(request.getAmount()))
+                .balance(Long.valueOf(payDto.getAmount()))
                 .accountStatus(TransactionStatus.PAY)
-                .accountNumber(request.getAccountNumber())
+                .accountNumber(payDto.getAccountNumber())
                 .accountId(account.getId())
+                .transactionResult(account.getBalance())
                 .build();
         transactionRepository.save(transaction);
 
         return PayDto.Response.builder()
                 .code(Code.PAY_SUCCESS.getCode())
                 .message(Code.PAY_SUCCESS.getMessage())
-                .orderId(transaction.getId())
-                .orderName(request.getOrderName())
-                .balance(Long.valueOf(request.getAmount()))
-                .accountBalance(account.getBalance())
+                .accountNumber(payDto.getAccountNumber())
+                .transactionResult(transaction.getTransactionResult())
+                .transactionId(transaction.getId())
+                .amount(payDto.getAmount())
+                .transactionDate(transaction.getCreateDate())
                 .build();
     }
 
-    public CancelDto.Response cancel(CancelDto.Request request) {
-        Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
+    public CancelDto.Response cancel(CancelDto cancelDto) {
+        Account account = accountRepository.findByAccountNumber(cancelDto.getAccountNumber())
                 .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-        Transaction transaction = transactionRepository.findById(Long.valueOf(request.getOrderId()))
+        Transaction transaction = transactionRepository.findById(Long.valueOf(cancelDto.getTransactionId()))
                 .orElseThrow(() -> new AccountException("거래 정보가 존재하지 않습니다."));
-        if(transaction.getAccountStatus().equals(TransactionStatus.CANCEL)) {
-            throw new AccountException("이미 취소 상태입니다.");
-        }
-        if(!transaction.getAccountStatus().equals(TransactionStatus.PAY)) {
-            throw new AccountException("결제만 취소 가능합니다.");
-        }
-        if(!account.getPassword().equals(Base64.encodeBase64String(request.getPassword().getBytes()))) {
-            throw new AccountException("패스워드가 맞지 않습니다.");
-        }
-        transaction.cancel();
+        if(!transaction.getBalance().equals(cancelDto.getAmount())) throw new AccountException("결제 금액이 달라 취소할 수 없습니다.");
+        if(transaction.getAccountStatus().equals(TransactionStatus.CANCEL)) throw new AccountException("이미 취소 상태입니다.");
+        if(!transaction.getAccountStatus().equals(TransactionStatus.PAY)) throw new AccountException("결제만 취소 가능합니다.");
+
+        transaction.cancel(cancelDto.getAmount());
+        account.deposit(cancelDto.getAmount());
 
         return CancelDto.Response.builder()
                 .code(Code.CANCEL_SUCCESS.getCode())
                 .message(Code.CANCEL_SUCCESS.getMessage())
-                .orderId(transaction.getId())
-                .orderName(transaction.getOrderName())
-                .balance(transaction.getBalance())
-                .accountBalance(account.getBalance())
+                .accountNumber(cancelDto.getAccountNumber())
+                .transactionResult(transaction.getTransactionResult())
+                .transactionId(cancelDto.getTransactionId())
+                .amount(cancelDto.getAmount())
+                .transactionDate(transaction.getModifiedDate())
                 .build();
     }
 
-    public TransactionDto transaction(String accountNumber, Pageable pageable) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountException("계좌가 존재하지 않습니다."));
-
-        Page<TransactionList> transactionLists = transactionRepository.findByAccountNumber(accountNumber, pageable);
+    public TransactionDto transaction(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new AccountException("거래 정보가 존재하지 않습니다."));
 
         return TransactionDto.builder()
                 .code(Code.SUCESS.getCode())
                 .message(Code.SUCESS.getMessage())
-                .accountNumber(accountNumber)
-                .totalPage(transactionLists.getTotalPages())
-                .transactionList(transactionLists.toList())
+                .accountNumber(transaction.getAccountNumber())
+                .transactionStatus(transaction.getAccountStatus())
+                .transactionResult(transaction.getTransactionResult())
+                .transactionId(transaction.getId())
+                .amount(transaction.getBalance())
+                .transactionDate(transaction.getModifiedDate())
                 .build();
     }
 

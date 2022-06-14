@@ -2,11 +2,17 @@ package com.example.account.repository.account;
 
 import com.example.account.domain.account.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findByAccountNumber(String AccountNumber);
+    Optional<Account> findByAccountNumber(String accountNumber);
+
+    Optional<Account> findByAccountNumberAndMemberId(String accountNumber, Long memberId);
+
+    @Query("select max(a.id) from Account a")
+    Optional<Integer> findMaxId();
 
 }

@@ -35,15 +35,15 @@ public class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private CreateMemberDto.Request request;
+    private CreateMemberDto request;
 
     @BeforeEach
     void setup() {
-        request = CreateMemberDto.Request.builder()
+        request = CreateMemberDto.builder()
                 .name("신성수")
                 .phoneNumber("01020834409")
                 .birthDay("19950918")
-                .password("1111")
+                .balance(1000L)
                 .build();
     }
 

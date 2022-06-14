@@ -26,8 +26,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,7 +53,7 @@ public class AccountControllerTest {
     @Test
     @DisplayName("계좌 정지 Test")
     void 계좌_정지() throws Exception {
-        UnregisterAccountDto.Request request = UnregisterAccountDto.Request.builder()
+        UnregisterAccountDto request = UnregisterAccountDto.builder()
                 .accountNumber("123213")
                 .build();
 
@@ -70,15 +71,14 @@ public class AccountControllerTest {
     @Test
     @DisplayName("계좌 생성 Test")
     void 계좌_생성_Test() throws Exception {
-        CreateAccountDto.Request request = CreateAccountDto.Request.builder()
-                .name("신성수")
-                .phoneNumber("01020834409")
-                .birthDay("19950918")
-                .password("1111")
+        CreateAccountDto request = CreateAccountDto.builder()
+                .memberId(1L)
+                .balance(1000L)
                 .build();
-        String testAccountNumber = "1492159028";
 
-        when(accountService.createAccount(any())).thenReturn(testAccountNumber);
+
+        when(accountService.createAccount(any())).thenReturn(CreateAccountDto.Response.builder()
+                .build());
 
         mockMvc.perform(post("/account")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,23 +86,24 @@ public class AccountControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.SUCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.SUCESS.getMessage()))
-                .andExpect(jsonPath("$.accountNumber").value(testAccountNumber))
+                .andExpect(jsonPath("$.accountNumber").value(""))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("계좌 조회 Test")
     void 계좌_조회_test() throws Exception {
-        String testAccountNumber = "1492159028";
+        String testAccountNumber = "1234567890";
         Long balance = 1000L;
         AccountStatus accountStatus = AccountStatus.IN_USE;
 
-        when(accountService.getAccount(anyString())).thenReturn(AccountResponseDto.builder()
+        when(accountService.getAccount(anyLong())).thenReturn(AccountResponseDto.builder()
                         .code(Code.SUCESS.getCode())
                         .message(Code.SUCESS.getMessage())
-                        .accountNumber(testAccountNumber)
-                        .balance(balance)
-                        .accountStatus(accountStatus)
+                        .accounts(List.of(AccountResponseDto.Accounts.builder()
+                                .accountNumber(testAccountNumber)
+                                .balance(balance)
+                                .build()))
                         .build());
 
         mockMvc.perform(get("/account/" + testAccountNumber))

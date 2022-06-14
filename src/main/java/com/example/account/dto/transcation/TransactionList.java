@@ -25,9 +25,8 @@ public class TransactionList {
     private LocalDateTime transactionDate;
 
     @Builder
-    public TransactionList(Long orderId, String orderName, Long balance, TransactionStatus status, LocalDateTime transactionDate) {
+    public TransactionList(Long orderId, Long balance, TransactionStatus status, LocalDateTime transactionDate) {
         this.orderId = orderId;
-        this.orderName = orderName;
         this.balance = balance;
         this.status = status;
         this.transactionDate = transactionDate;

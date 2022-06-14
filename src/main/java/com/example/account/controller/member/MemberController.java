@@ -7,6 +7,7 @@ import com.example.account.domain.account.AccountStatus;
 import com.example.account.domain.member.Member;
 import com.example.account.dto.account.UnregisterAccountDto;
 import com.example.account.dto.member.CreateMemberDto;
+import com.example.account.service.account.AccountService;
 import com.example.account.service.member.MemberService;
 import com.example.account.utils.AccountUtils;
 import io.swagger.annotations.Api;
@@ -32,7 +33,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private final AccountUtils accountUtils;
+    private final AccountService accountService;
 
     @PostMapping(value = "/member")
     @Operation(summary = "회원 가입 API", description = "회원을 가입시킨다.")
@@ -42,18 +43,17 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> createMembeer(@RequestBody @Valid CreateMemberDto.Request request) {
+    public ResponseEntity<CreateMemberDto.Response> createMembeer(@RequestBody @Valid CreateMemberDto createMemberDto) {
 
         Member member = Member.builder()
-                .name(request.getName())
-                .birthDay(request.getBirthDay())
-                .phoneNumber(request.getPhoneNumber())
+                .name(createMemberDto.getName())
+                .birthDay(createMemberDto.getBirthDay())
+                .phoneNumber(createMemberDto.getPhoneNumber())
                 .status(MemberStatus.NORMAL)
                 .accounts(List.of(Account.builder()
-                                    .accountNumber(accountUtils.create())
+                                    .accountNumber(accountService.findMaxId())
                                     .accountStatus(AccountStatus.IN_USE)
-                                    .password(Base64.encodeBase64String(request.getPassword().getBytes()))
-                                    .balance(1_000L)
+                                    .balance(createMemberDto.getBalance())
                                     .build()))
                 .build();
 
@@ -63,6 +63,7 @@ public class MemberController {
                 .code(Code.SUCESS.getCode())
                 .message(Code.SUCESS.getMessage())
                 .accountNumber(member.getAccounts().get(0).getAccountNumber())
+                .memberId(member.getId())
                 .build());
     }
 

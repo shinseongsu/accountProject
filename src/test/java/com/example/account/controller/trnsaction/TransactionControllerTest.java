@@ -21,8 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -48,24 +47,28 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("계좌 입금 Test")
     void 계좌_입금_test() throws Exception {
-        String accountNumber = "1248124912";
-        String amount = "1000";
+        String accountNumber = "1234567890";
+        Long amount = 1000L;
 
-        DepositDto.Request request = DepositDto.Request.builder()
+        DepositDto depositDto = DepositDto.builder()
+                .memberId(1L)
                 .accountNumber(accountNumber)
                 .amount(amount)
                 .build();
 
-        when(transactionService.deposit(any())).thenReturn(Account.builder()
+        when(transactionService.deposit(any())).thenReturn(DepositDto.Response.builder()
+                        .code(Code.DEPOSIT_SUCCESS.getCode())
+                        .message(Code.DEPOSIT_SUCCESS.getMessage())
                         .accountNumber(accountNumber)
-                        .password("111")
-                        .balance(Long.valueOf(amount))
-                        .accountStatus(AccountStatus.IN_USE)
+                        .transactionResult(0L)
+                        .transactionId(1L)
+                        .amount(amount)
+                        .transactionDate(LocalDateTime.now())
                         .build());
 
         mockMvc.perform(post("/deposit")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(depositDto)))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.DEPOSIT_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.DEPOSIT_SUCCESS.getMessage()))
@@ -77,21 +80,23 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("계좌 출금 Test")
     void 계좌_출금_test() throws Exception {
-        String accountNumber = "1248124912";
-        String amount = "1000";
-        String password = "1111";
+        String accountNumber = "1234567890";
+        Long amount = 1000L;
 
-        WithdrawDto.Request request = WithdrawDto.Request.builder()
+        WithdrawDto request = WithdrawDto.builder()
                 .accountNumber(accountNumber)
                 .amount(amount)
-                .password(password)
+                .memberId(1L)
                 .build();
 
-        when(transactionService.withdraw(any())).thenReturn(Account.builder()
+        when(transactionService.withdraw(any())).thenReturn(WithdrawDto.Response.builder()
+                .code(Code.WITHDRAW_SUCCESS.getCode())
+                .message(Code.WITHDRAW_SUCCESS.getMessage())
                 .accountNumber(accountNumber)
-                .password("111")
-                .balance(Long.valueOf(amount))
-                .accountStatus(AccountStatus.IN_USE)
+                .transactionResult(0L)
+                .transactionId(1L)
+                .amount(amount)
+                .transactionDate(LocalDateTime.now())
                 .build());
 
 
@@ -110,26 +115,18 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("결제 Test")
     void 결제_test() throws Exception {
-        String accountNumber = "1248124912";
-        String orderName = "테스트 상품";
-        String amount = "1000";
-        String password = "1111";
-        Long orderId = 1000L;
+        String accountNumber = "1234567890";
+        Long amount = 1000L;
 
-        PayDto.Request request = PayDto.Request.builder()
+        PayDto request = PayDto.builder()
                 .accountNumber(accountNumber)
-                .orderName(orderName)
                 .amount(amount)
-                .password(password)
+                .memberId(1L)
                 .build();
 
         when(transactionService.pay(any())).thenReturn(PayDto.Response.builder()
                 .code(Code.PAY_SUCCESS.getCode())
                 .message(Code.PAY_SUCCESS.getMessage())
-                .orderId(orderId)
-                .orderName(request.getOrderName())
-                .balance(Long.valueOf(request.getAmount()))
-                .accountBalance(Long.valueOf(amount))
                 .build());
 
         mockMvc.perform(post("/pay")
@@ -138,8 +135,6 @@ public class TransactionControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value(Code.PAY_SUCCESS.getCode()))
                 .andExpect(jsonPath("$.message").value(Code.PAY_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.orderId").value(orderId))
-                .andExpect(jsonPath("$.orderName").value(orderName))
                 .andExpect(jsonPath("$.balance").value(amount))
                 .andExpect(jsonPath("$.accountBalance").value(Long.valueOf(amount)))
                 .andExpect(status().isOk());
@@ -154,19 +149,18 @@ public class TransactionControllerTest {
         String orderId = "1";
         String orderName = "테스트 상품";
 
-        CancelDto.Request request = CancelDto.Request.builder()
-                .orderId(orderId)
+        CancelDto request = CancelDto.builder()
+          //      .orderId(orderId)
                 .accountNumber(accountNumber)
-                .password(password)
+         //       .password(password)
                 .build();
 
         when(transactionService.cancel(any())).thenReturn(CancelDto.Response.builder()
                 .code(Code.CANCEL_SUCCESS.getCode())
                 .message(Code.CANCEL_SUCCESS.getMessage())
-                .orderId(Long.valueOf(orderId))
-                .orderName(orderName)
-                .balance(Long.valueOf(amount))
-                .accountBalance(Long.valueOf(amount))
+          //      .orderName(orderName)
+          //      .balance(Long.valueOf(amount))
+          //      .accountBalance(Long.valueOf(amount))
                 .build());
 
         mockMvc.perform(post("/cancel")
@@ -193,18 +187,10 @@ public class TransactionControllerTest {
         TransactionStatus transactionStatus = TransactionStatus.PAY;
         LocalDateTime current = LocalDateTime.now();
 
-        when(transactionService.transaction(anyString(), any())).thenReturn(TransactionDto.builder()
+        when(transactionService.transaction(anyLong())).thenReturn(TransactionDto.builder()
                         .code(Code.SUCESS.getCode())
                         .message(Code.SUCESS.getMessage())
                         .accountNumber(accountNumber)
-                        .totalPage(totalPage)
-                        .transactionList(List.of( TransactionList.builder()
-                                .orderId(orderId)
-                                .orderName(orderName)
-                                .balance(balance)
-                                .status(transactionStatus)
-                                .transactionDate(current)
-                                .build()))
                         .build());
 
 

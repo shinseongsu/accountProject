@@ -6,15 +6,16 @@ Content-Type: application/json
   "name": "신성수",
   "phoneNumber": "01020834409",
   "birthDay": "19950918",
-  "password": "1111"
+  "balance": "1000"
 }
 
 ### 계좌 해지
-DELETE http://localhost:8080/account
+PUT http://localhost:8080/account
 Content-Type: application/json
 
 {
-  "accountNumber": "0020220614022634"
+  "accountNumber": "0000000012",
+  "memberId": "2"
 }
 
 ### 계좌 생성
@@ -22,14 +23,12 @@ POST http://localhost:8080/account
 Content-Type: application/json
 
 {
-  "name": "신성수",
-  "phoneNumber": "01020834409",
-  "birthDay": "19950918",
-  "password": "1111"
+  "memberId": "1",
+  "balance": "1000"
 }
 
 ### 계좌 조회
-GET http://localhost:8080/account/0020220614022634
+GET http://localhost:8080/account/1
 
 
 ### 입금
@@ -37,7 +36,8 @@ POST http://localhost:8080/deposit
 Content-Type: application/json
 
 {
-  "accountNumber": "0020220614022634",
+  "memberId": "1",
+  "accountNumber": "0000000002",
   "amount" : "100000"
 }
 
@@ -46,9 +46,9 @@ POST http://localhost:8080/withdraw
 Content-Type: application/json
 
 {
-  "accountNumber": "0020220614022634",
-  "amount": "1000",
-  "password": "1111"
+  "memberId": "1",
+  "accountNumber": "0000000002",
+  "amount" : "10"
 }
 
 ### 지불
@@ -56,10 +56,9 @@ POST http://localhost:8080/pay
 Content-Type: application/json
 
 {
-  "accountNumber": "0020220614022634",
-  "orderName": "아이폰 14",
-  "amount": "1000",
-  "password": "1111"
+  "memberId": "1",
+  "accountNumber": "0000000002",
+  "amount" : "100"
 }
 
 ### 결제 취소
@@ -67,10 +66,10 @@ POST http://localhost:8080/cancel
 Content-Type: application/json
 
 {
-  "orderId": "3",
-  "accountNumber": "0020220614022634",
-  "password": "1111"
+  "transactionId": "3",
+  "accountNumber": "0000000002",
+  "amount" : "100"
 }
 
 ### 거래내역 조회
-GET http://localhost:8080/transaction?accountNumber=0020220614022634&page=0&size=10
+GET http://localhost:8080/transaction?transaction_id=3

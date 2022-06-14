@@ -20,8 +20,6 @@ public class Account extends BaseEntity {
 
     private String accountNumber;
 
-    private String password;
-
     private Long balance;
 
     @Column(name = "member_id")
@@ -44,7 +42,7 @@ public class Account extends BaseEntity {
 
     public void withdraw(Long amount) {
         Long mathBalance = this.balance - amount;
-        if( mathBalance < 0  ) {
+        if( mathBalance < 0 ) {
             throw new AccountException("잔액이 부족합니다.");
         }
         this.balance = mathBalance;

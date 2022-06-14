@@ -17,34 +17,32 @@ public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String orderName;
     private Long balance;
+    private String accountNumber;
+    private Long accountId;
+    private Long transactionResult;
 
     @Enumerated(EnumType.STRING)
     private TransactionStatus accountStatus;
-
-    private String accountNumber;
-
-    private Long accountId;
 
     @ManyToOne
     @JoinColumn(name = "accountId", updatable = false, insertable = false)
     private Account account;
 
     @Builder
-    public Transaction(Long id, String orderName, Long balance, TransactionStatus accountStatus,
-                       String accountNumber, Long accountId) {
+    public Transaction(Long id, Long balance, TransactionStatus accountStatus,
+                       String accountNumber, Long accountId, Long transactionResult) {
         this.id = id;
-        this.orderName = orderName;
         this.balance = balance;
         this.accountStatus = accountStatus;
         this.accountNumber = accountNumber;
         this.accountId = accountId;
+        this.transactionResult = transactionResult;
     }
 
-    public void cancel() {
+    public void cancel(Long amount) {
         this.accountStatus = TransactionStatus.CANCEL;
+        this.transactionResult += amount;
     }
 
 }

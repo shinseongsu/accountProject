@@ -34,7 +34,7 @@ public class AccountController {
         return redisTestService.getLock();
     }
 
-    @DeleteMapping("/account")
+    @PutMapping("/account")
     @Operation(summary = "계좌 정지", description = "계좌 번호를 정지합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UnregisterAccountDto.Response.class))),
@@ -42,9 +42,8 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> unregistered(@RequestBody @Valid UnregisterAccountDto.Request request) {
-        accountService.unregister(request);
-        return ResponseEntity.ok(UnregisterAccountDto.Response.success());
+    public ResponseEntity<UnregisterAccountDto.Response> unregistered(@RequestBody @Valid UnregisterAccountDto unregisterAccountDto) {
+        return ResponseEntity.ok(accountService.unregister(unregisterAccountDto));
     }
 
     @PostMapping("/account")
@@ -55,15 +54,11 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> createAccount(@RequestBody @Valid CreateAccountDto.Request request) {
-        return ResponseEntity.ok(CreateAccountDto.Response.builder()
-                        .code(Code.SUCESS.getCode())
-                        .message(Code.SUCESS.getMessage())
-                        .accountNumber(accountService.createAccount(request))
-                        .build());
+    public ResponseEntity<?> createAccount(@RequestBody @Valid CreateAccountDto createAccountDto) {
+        return ResponseEntity.ok(accountService.createAccount(createAccountDto));
     }
 
-    @GetMapping("/account/{accountNumber}")
+    @GetMapping("/account/{memberId}")
     @Operation(summary = "계좌 조회", description = "계좌 조회 API 입니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AccountResponseDto.class))),
@@ -71,8 +66,8 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> getAccount(@PathVariable(value = "accountNumber") String accountNumber) {
-        return ResponseEntity.ok(accountService.getAccount(accountNumber));
+    public ResponseEntity<AccountResponseDto> getAccount(@PathVariable(value = "memberId") Long memberId) {
+        return ResponseEntity.ok(accountService.getAccount(memberId));
     }
 
 }

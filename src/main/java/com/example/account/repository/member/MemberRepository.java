@@ -22,4 +22,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
                                                          @Param("birthDay") String birthDay,
                                                          @Param("phoneNumber") String phoneNumber);
 
+    @Query("select m " +
+            "from Member m " +
+            "join fetch Account a " +
+            "on m.id = a.memberId " +
+            "and a.accountStatus = 'IN_USE' " +
+            "where m.id = :memberId ")
+    Optional<Member> findAccountListByMemberId(@Param("memberId") Long memberId);
+
 }

@@ -7,48 +7,62 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
+@Schema(description = "취소 요청 DTO")
+@Getter @Setter
+@NoArgsConstructor
 public class CancelDto {
 
-    @Schema(description = "취소 요청 DTO")
-    @Getter @Setter
-    @NoArgsConstructor
-    public static class Request {
-        @NotEmpty
-        @Schema(description = "주문 아이디")
-        private String orderId;
-        @NotEmpty
-        @Schema(description = "계좌 번호")
-        private String accountNumber;
-        @NotEmpty
-        @Schema(description = "계좌 비밀번호")
-        private String password;
+    @NotNull
+    @Schema(description = "거래 번호")
+    private Long transactionId;
 
-        @Builder
-        public Request(String orderId, String accountNumber, String password) {
-            this.orderId = orderId;
-            this.accountNumber = accountNumber;
-            this.password = password;
-        }
+    @NotEmpty
+    @Schema(description = "계좌 번호")
+    private String accountNumber;
 
+    @NotNull
+    @Schema(description = "거래 금액")
+    private Long amount;
+
+    @Builder
+    public CancelDto(Long transactionId, String accountNumber, Long amount) {
+        this.transactionId = transactionId;
+        this.accountNumber = accountNumber;
+        this.amount = amount;
     }
 
     @Schema(description = "취소 응답 DTO")
     @Getter
-    @Builder
     public static class Response {
         @Schema(description = "결과 코드")
         private String code;
         @Schema(description = "결과 메시지")
         private String message;
-        @Schema(description = "주문 아이디")
-        private Long orderId;
-        @Schema(description = "상품명")
-        private String orderName;
-        @Schema(description = "취소 금액")
-        private Long balance;
+        @Schema(description = "계좌 번호")
+        private String accountNumber;
         @Schema(description = "계좌 현재 잔액")
-        private Long accountBalance;
+        private Long transactionResult;
+        @Schema(description = "거래 아이디")
+        private Long transactionId;
+        @Schema(description = "취소 거래 금액")
+        private Long amount;
+        @Schema(description = "거래 일시")
+        private LocalDateTime transactionDate;
+
+        @Builder
+        public Response(String code, String message, String accountNumber, Long transactionResult,
+                        Long transactionId, Long amount, LocalDateTime transactionDate) {
+            this.code = code;
+            this.message = message;
+            this.accountNumber = accountNumber;
+            this.transactionResult = transactionResult;
+            this.transactionId = transactionId;
+            this.amount = amount;
+            this.transactionDate = transactionDate;
+        }
     }
 
 }

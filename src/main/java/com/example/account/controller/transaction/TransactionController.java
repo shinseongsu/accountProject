@@ -34,15 +34,8 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> deposit(@RequestBody @Valid DepositDto.Request request) {
-        Account account =  transactionService.deposit(request);
-
-        return ResponseEntity.ok( DepositDto.Response.builder()
-                        .code(Code.DEPOSIT_SUCCESS.getCode())
-                        .message(Code.DEPOSIT_SUCCESS.getMessage())
-                        .accountNumber(request.getAccountNumber())
-                        .currentBalance(account.getBalance())
-                        .build());
+    public ResponseEntity<DepositDto.Response> deposit(@RequestBody @Valid DepositDto depositDto) {
+        return ResponseEntity.ok(transactionService.deposit(depositDto));
     }
 
     @PostMapping("/withdraw")
@@ -53,15 +46,8 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> withdraw(@RequestBody @Valid WithdrawDto.Request request) {
-        Account account = transactionService.withdraw(request);
-
-        return ResponseEntity.ok(WithdrawDto.Response.builder()
-                        .code(Code.WITHDRAW_SUCCESS.getCode())
-                        .message(Code.WITHDRAW_SUCCESS.getMessage())
-                        .accountNumber(request.getAccountNumber())
-                        .currentBalance(account.getBalance())
-                        .build());
+    public ResponseEntity<WithdrawDto.Response> withdraw(@RequestBody @Valid WithdrawDto withdrawDto) {
+        return ResponseEntity.ok(transactionService.withdraw(withdrawDto));
     }
 
     @PostMapping("/pay")
@@ -72,7 +58,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> pay(@RequestBody @Valid PayDto.Request request) {
+    public ResponseEntity<?> pay(@RequestBody @Valid PayDto request) {
         return ResponseEntity.ok(transactionService.pay(request));
     }
 
@@ -84,7 +70,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> cancel(@RequestBody @Valid CancelDto.Request request) {
+    public ResponseEntity<?> cancel(@RequestBody @Valid CancelDto request) {
         return ResponseEntity.ok(transactionService.cancel(request));
     }
 
@@ -96,8 +82,8 @@ public class TransactionController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERVAL SERVER ERROR")
     })
-    public ResponseEntity<?> transactionList(@RequestParam String accountNumber, Pageable pageable) {
-        return ResponseEntity.ok(transactionService.transaction(accountNumber, pageable));
+    public ResponseEntity<?> transactionList(@RequestParam(value = "transaction_id") Long transactionId) {
+        return ResponseEntity.ok(transactionService.transaction(transactionId));
     }
 
 }

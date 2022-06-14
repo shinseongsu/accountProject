@@ -4,50 +4,51 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
+@Schema(description = "계좌 생성 요청 DTO")
+@Getter @Setter
+@NoArgsConstructor
 public class CreateAccountDto {
 
-    @Schema(description = "계좌 생성 요청 DTO")
-    @Getter @Setter
-    @NoArgsConstructor
-    public static class Request {
-        @NotEmpty
-        @Schema(description = "이름")
-        private String name;
+    @NotNull
+    @Schema(description = "회원 아이디")
+    private Long memberId;
 
-        @NotEmpty
-        @Schema(description = "생년월일")
-        private String birthDay;
+    @NotNull
+    @Schema(description = "초기 잔액")
+    private Long balance;
 
-        @NotEmpty
-        @Schema(description = "핸드폰 번호")
-        private String phoneNumber;
-
-        @NotEmpty
-        @Size(min = 4, max = 4)
-        @Schema(description = "계좌 비밀번호")
-        private String password;
-
-        @Builder
-        public Request(String name, String birthDay, String phoneNumber, String password) {
-            this.name = name;
-            this.birthDay = birthDay;
-            this.phoneNumber = phoneNumber;
-            this.password = password;
-        }
-
+    @Builder
+    public CreateAccountDto(Long memberId, Long balance) {
+        this.memberId = memberId;
+        this.balance = balance;
     }
 
     @Schema(description = "계좌 생성 응답 DTO")
     @Getter
-    @Builder
     public static class Response {
         @Schema(description = "결과 코드")
         private String code;
         @Schema(description = "결과 메시지")
         private String message;
+        @Schema(description = "회원 아이디")
+        private Long memberId;
         @Schema(description = "생성된 계좌 번호")
         private String accountNumber;
+        @Schema(description = "등록일시")
+        private LocalDateTime registerDate;
+
+        @Builder
+        public Response(String code, String message, Long memberId, String accountNumber, LocalDateTime registerDate) {
+            this.code = code;
+            this.message = message;
+            this.memberId = memberId;
+            this.accountNumber = accountNumber;
+            this.registerDate = registerDate;
+        }
+
     }
 }

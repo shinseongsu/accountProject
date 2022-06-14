@@ -16,6 +16,9 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,10 +26,9 @@ import javax.transaction.Transactional;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final MemberRepository memberRepository;
-    private final AccountUtils accountUtils;
 
-    public void unregister(UnregisterAccountDto.Request request) {
-        Account account =  accountRepository.findByAccountNumber(request.getAccountNumber())
+    public UnregisterAccountDto.Response unregister(UnregisterAccountDto unregisterAccountDto) {
+        Account account =  accountRepository.findByAccountNumberAndMemberId(unregisterAccountDto.getAccountNumber(), unregisterAccountDto.getMemberId())
                         .orElseThrow(() -> new AccountException("계좌 정보가 없습니다."));
 
         if(account.getAccountStatus().equals(AccountStatus.UNREGISTERED)) {
@@ -34,35 +36,59 @@ public class AccountService {
         }
 
         account.unregister();
+
+        return UnregisterAccountDto.Response.builder()
+                .code(Code.UNREGISTER_SUCCESS.getCode())
+                .message(Code.UNREGISTER_SUCCESS.getMessage())
+                .memberId(unregisterAccountDto.getMemberId())
+                .accountNumber(unregisterAccountDto.getAccountNumber())
+                .unregisterDate(account.getModifiedDate())
+                .build();
     }
 
-    public String createAccount(CreateAccountDto.Request request) {
-        Member member = memberRepository.findByNameAndBirthDayAndPhoneNumber(request.getName(), request.getBirthDay(), request.getPhoneNumber())
+    public CreateAccountDto.Response createAccount(CreateAccountDto createAccountDto) {
+        Member member = memberRepository.findAccountListByMemberId(createAccountDto.getMemberId())
                 .orElseThrow(() -> new AccountException("가입된 유저가 아닙니다."));
         member.isAccountCountTen();
 
         Account account = Account.builder()
-                .accountNumber(accountUtils.create())
-                .balance(1000L)
+                .accountNumber(findMaxId())
+                .balance(createAccountDto.getBalance())
                 .accountStatus(AccountStatus.IN_USE)
                 .memberId(member.getId())
-                .password(Base64.encodeBase64String(request.getPassword().getBytes()))
                 .build();
         accountRepository.save(account);
 
-        return account.getAccountNumber();
+        return CreateAccountDto.Response.builder()
+                .code(Code.SUCESS.getCode())
+                .message(Code.SUCESS.getMessage())
+                .memberId(member.getId())
+                .accountNumber(account.getAccountNumber())
+                .registerDate(account.getCreateDate())
+                .build();
     }
 
-    public AccountResponseDto getAccount(String accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
+    public AccountResponseDto getAccount(Long memberId) {
+        Member member = memberRepository.findAccountListByMemberId(memberId)
                 .orElseThrow(() -> new AccountException("가입된 유저가 아닙니다."));
 
         return AccountResponseDto.builder()
                 .code(Code.SUCESS.getCode())
                 .message(Code.SUCESS.getMessage())
-                .accountNumber(account.getAccountNumber())
-                .balance(account.getBalance())
-                .accountStatus(account.getAccountStatus())
+                .accounts(member.getAccounts().stream().map(account ->
+                                        AccountResponseDto.Accounts.builder()
+                                                    .accountNumber(account.getAccountNumber())
+                                                    .balance(account.getBalance())
+                                                    .build()
+                                        ).collect(Collectors.toList()))
                 .build();
     }
+
+    public String findMaxId() {
+        Integer maxSeq = accountRepository.findMaxId()
+                .orElse(0);
+
+        return String.format("%010d", maxSeq+1);
+    }
+
 }

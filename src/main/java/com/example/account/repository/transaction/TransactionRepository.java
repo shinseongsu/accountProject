@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Query(value = "select new com.example.account.dto.transcation.TransactionList(t.id, t.orderName, t.balance, t.accountStatus, t.modifiedDate) " +
+    @Query(value = "select new com.example.account.dto.transcation.TransactionList(t.id, t.balance, t.accountStatus, t.modifiedDate) " +
             "from Transaction t " +
             "where t.accountNumber = :accountNumber"
             , countName = "select count(t) Transaction t where  t.accountNumber = :accountNumber")

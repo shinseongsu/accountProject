@@ -22,53 +22,53 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
-    @Mock
-    private MemberRepository memberRepository;
-
-    @InjectMocks
-    private MemberService memberService;
-
-    @Test
-    @DisplayName("회원_가입 - 정상")
-    void 회원_가입() throws Exception {
-        Member member = Member.builder()
-                .id(1L)
-                .name("신성수")
-                .phoneNumber("01020834409")
-                .birthDay("19950918")
-                .status(MemberStatus.NORMAL)
-                .build();
-
-        given(memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
-                                                                    member.getBirthDay(),
-                                                                    member.getPhoneNumber()))
-                .willReturn(Optional.empty());
-
-        memberService.createMember(member);
-    }
-
-
-    @Test
-    @DisplayName("회원_가입 - 회원이 이미 존재할때")
-    void 회원_가입_회원이_존재할때() throws Exception {
-        Member member = Member.builder()
-                .id(1L)
-                .name("신성수")
-                .phoneNumber("01020834409")
-                .birthDay("19950918")
-                .status(MemberStatus.NORMAL)
-                .build();
-
-        given(memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
-                                                                    member.getBirthDay(),
-                                                                    member.getPhoneNumber()))
-                .willReturn(Optional.of(member));
-
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> memberService.createMember(member));
-
-        assertEquals("회원이 이미 존재합니다.", exception.getMessage());
-    }
+//    @Mock
+//    private MemberRepository memberRepository;
+//
+//    @InjectMocks
+//    private MemberService memberService;
+//
+//    @Test
+//    @DisplayName("회원_가입 - 정상")
+//    void 회원_가입() throws Exception {
+//        Member member = Member.builder()
+//                .id(1L)
+//                .name("신성수")
+//                .phoneNumber("01020834409")
+//                .birthDay("19950918")
+//                .status(MemberStatus.NORMAL)
+//                .build();
+//
+//        given(memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
+//                                                                    member.getBirthDay(),
+//                                                                    member.getPhoneNumber()))
+//                .willReturn(Optional.empty());
+//
+//        memberService.createMember(member);
+//    }
+//
+//
+//    @Test
+//    @DisplayName("회원_가입 - 회원이 이미 존재할때")
+//    void 회원_가입_회원이_존재할때() throws Exception {
+//        Member member = Member.builder()
+//                .id(1L)
+//                .name("신성수")
+//                .phoneNumber("01020834409")
+//                .birthDay("19950918")
+//                .status(MemberStatus.NORMAL)
+//                .build();
+//
+//        given(memberRepository.findByNameAndBirthDayAndPhoneNumber(member.getName(),
+//                                                                    member.getBirthDay(),
+//                                                                    member.getPhoneNumber()))
+//                .willReturn(Optional.of(member));
+//
+//        RuntimeException exception = assertThrows(RuntimeException.class,
+//                () -> memberService.createMember(member));
+//
+//        assertEquals("회원이 이미 존재합니다.", exception.getMessage());
+//    }
 
 
 }

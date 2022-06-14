@@ -7,31 +7,36 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
+@Schema(description = "입금 요청 DTO")
+@Getter @Setter
+@NoArgsConstructor
 public class DepositDto {
 
-    @Schema(description = "입금 요청 DTO")
-    @Getter @Setter
-    @NoArgsConstructor
-    public static class Request {
-        @NotEmpty
-        @Schema(description = "계좌 번호")
-        private String accountNumber;
-        @NotEmpty
-        @Schema(description = "입금 금액")
-        private String amount;
+    @NotNull
+    @Schema(description = "회원 아이디")
+    private Long memberId;
 
-        @Builder
-        public Request(String accountNumber, String amount) {
-            this.accountNumber = accountNumber;
-            this.amount = amount;
-        }
+    @NotEmpty
+    @Schema(description = "계좌 번호")
+    private String accountNumber;
 
+    @NotNull
+    @Schema(description = "거래 금액")
+    private Long amount;
+
+    @Builder
+    public DepositDto(Long memberId, String accountNumber, Long amount) {
+        this.memberId = memberId;
+        this.accountNumber = accountNumber;
+        this.amount = amount;
     }
+
 
     @Schema(description = "입금 응답 DTO")
     @Getter
-    @Builder
     public static class Response {
         @Schema(description = "결과 코드")
         private String code;
@@ -40,7 +45,26 @@ public class DepositDto {
         @Schema(description = "계좌 번호")
         private String accountNumber;
         @Schema(description = "계좌 현재 잔액")
-        private Long currentBalance;
+        private Long transactionResult;
+        @Schema(description = "거래 아이디")
+        private Long transactionId;
+        @Schema(description = "거래 금액")
+        private Long amount;
+        @Schema(description = "거래 일시")
+        private LocalDateTime transactionDate;
+
+        @Builder
+        public Response(String code, String message, String accountNumber, Long transactionResult,
+                        Long transactionId, Long amount, LocalDateTime transactionDate) {
+            this.code = code;
+            this.message = message;
+            this.accountNumber = accountNumber;
+            this.transactionResult = transactionResult;
+            this.transactionId = transactionId;
+            this.amount = amount;
+            this.transactionDate = transactionDate;
+        }
+
     }
 
 }
