@@ -10,7 +10,6 @@ import com.example.account.dto.account.UnregisterAccountDto;
 import com.example.account.exception.AccountException;
 import com.example.account.repository.account.AccountRepository;
 import com.example.account.repository.member.MemberRepository;
-import com.example.account.utils.AccountUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
