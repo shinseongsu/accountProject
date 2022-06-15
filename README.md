@@ -86,11 +86,11 @@
 
 - 요청
 
-![request](./image/계좌조회%20요청.png)
+![request](./image/계좌%20조회%20요청.png)
 
 - 응답
 
-![response](./image/계좌조회%20응답.png)
+![response](./image/계좌%20조회%20응답.png)
 
 ---
 
@@ -110,7 +110,7 @@
 
 - 요청
 
-![request](./image/입금%20요청.png)
+![request](./image/입급%20요청.png)
 
 - 응답 
 
@@ -162,8 +162,25 @@
 
 - 응답
 
-![response](./image/거래%20내역%20응답.png)
+![response](./image/거래내역%20응답.png)
 
+### 해결 하는 노력
+
+#### 락
+
+1. 처음에는 JPA 에서는 Lock 을 거는 방식을 도입했었습니다.
+
+![Lock](./image/Lock-1.png)
+
+2. 하지만, 레디스를 사용하기 떄문에 Lock 기능을 이용하였습니다.
+
+![Lock](./image/Lock-2.png)
+
+### Cache 
+
+1. @Cachable 을 사용하여 거래내역을 캐싱 처리 했습니다.
+
+![Cache](./image/cache.png)
 
 ### 아쉬운점
 
@@ -192,3 +209,4 @@
 5 [여기서 아쉬운 부분] 모든 곳을 채워 테스트 케이스 100%을 만들고 싶다.
 
 ![jacoco-5](./image/jacoco-5.png)
+

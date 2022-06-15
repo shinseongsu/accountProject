@@ -14,8 +14,8 @@ PUT http://localhost:8080/account
 Content-Type: application/json
 
 {
-  "accountNumber": "0000000012",
-  "memberId": "2"
+  "accountNumber": "0000000001",
+  "memberId": "1"
 }
 
 ### 계좌 생성
