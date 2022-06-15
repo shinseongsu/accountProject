@@ -210,3 +210,11 @@
 
 ![jacoco-5](./image/jacoco-5.png)
 
+
+### Redis port
+
+1. 중복 방지를 위해 shell 을 사용한다.
+
+- 단점 : window에서는 제대로 작동을 안함 ... 해결방안 찾는중...
+
+![redis](./image/redis.png)
