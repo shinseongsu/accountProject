@@ -72,4 +72,4 @@ Content-Type: application/json
 }
 
 ### 거래내역 조회
-GET http://localhost:8080/transaction?transaction_id=1
+GET http://localhost:8080/transaction?transaction_id=3

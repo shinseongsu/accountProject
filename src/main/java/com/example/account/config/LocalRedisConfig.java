@@ -20,10 +20,10 @@ public class LocalRedisConfig {
 
     @PostConstruct
     public void startRedis() throws IOException {
-        int port = isRedisRunning()? findAvailablePort() : redisPort;
+        // int port = isRedisRunning()? findAvailablePort() : redisPort;
 
         redisServer = RedisServer.builder()
-                .port(port)
+                .port(redisPort)
                 .setting("maxmemory 1024M").build();
         redisServer.start();
     }

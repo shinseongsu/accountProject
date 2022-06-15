@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_READ)
     Optional<Account> findByAccountNumber(String accountNumber);
 
     Optional<Account> findByAccountNumberAndMemberId(String accountNumber, Long memberId);
