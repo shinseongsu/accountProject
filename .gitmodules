@@ -1,4 +1,3 @@
-[submodule "private_account_yml"]
-	path = src/resource/security/
-	url = https://github.com/shinseongsu/private_account_yml.git
-	branch=main
+[submodule "secret_test/src/resource/security"]
+	path = secret_test/src/resource/security
+	url = https://github.com/shinseongsu/secret_test.git
