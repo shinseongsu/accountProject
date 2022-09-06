@@ -1,3 +1,3 @@
-[submodule "private_account_yml"]
+[submodule "src/main/resources/security"]
 	path = src/main/resources/security
 	url = https://github.com/shinseongsu/private_account_yml.git
