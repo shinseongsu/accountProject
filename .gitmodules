@@ -1,3 +1,6 @@
 [submodule "src/resource/security"]
 	path = src/resource/security
 	url = https://github.com/shinseongsu/security.git
+[submodule "src/main/resources/security"]
+	path = src/main/resources/security
+	url = https://github.com/shinseongsu/security.git
