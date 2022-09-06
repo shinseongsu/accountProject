@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on: # Event
   push:
-    branches: [ master ] 
+    branches: [ main ] 
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs: 
   test: # Job id
